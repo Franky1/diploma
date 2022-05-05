@@ -38,7 +38,7 @@ my_width = 1100
 my_height = 800
 
 
-@st.cache
+@st.cache(suppress_st_warning=True)
 def load_data(ticker):
     data = yf.download(ticker, START, TODAY)
     data.reset_index(inplace=True)
@@ -54,7 +54,7 @@ st.subheader('Необробленний датасет')
 st.write(data)
 
 
-@st.cache
+@st.cache(suppress_st_warning=True)
 def plot_raw_data():
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=data["Date"], y=data["Close"], name='Stock Close'))
@@ -67,7 +67,7 @@ st.subheader('Покажемо на графіку історію цін акц�
 plot_raw_data()
 
 
-@st.cache
+@st.cache(suppress_st_warning=True)
 def make_prediction(ticker, parametr, for_one_day, date_for_one_day=TODAY):
     # get the stock
     df = web.DataReader(ticker, data_source='yahoo', start=START, end=TODAY)
