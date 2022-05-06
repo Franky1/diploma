@@ -1,0 +1,15 @@
+--prefer-binary
+cython
+numpy
+pandas
+pandas-datareader
+matplotlib
+pillow
+yfinance
+plotly
+scikit-learn
+tensorflow-cpu
+keras
+pystan==2.19.1.1
+prophet
+streamlit
