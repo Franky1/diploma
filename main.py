@@ -1,26 +1,20 @@
 import datetime
-
-import streamlit as st
+import math
+import warnings
 from datetime import date
 
-import yfinance as yf
-from fbprophet import Prophet
-from fbprophet.plot import plot_plotly
-from plotly import graph_objs as go
-import math
-import pandas_datareader as web
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
-from keras.models import Sequential
-from keras.layers import Dense, LSTM
+import pandas_datareader as web
+import streamlit as st
+import yfinance as yf
 from keras.models import load_model
-import matplotlib.pyplot as plt
-import mplfinance as mpl
-import seaborn as sns
-import warnings
 from PIL import Image
-import PIL
+from plotly import graph_objs as go
+from prophet import Prophet
+from prophet.plot import plot_plotly
+from sklearn.preprocessing import MinMaxScaler
 
 warnings.filterwarnings("ignore")
 
