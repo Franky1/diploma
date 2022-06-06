@@ -199,11 +199,11 @@ d = st.date_input(
     "Оберіть дату для прогнозу(тільки Пн-Пт)",
     datetime.date.today())
 st.write('Результати:')
-st.write('Model1 -   Low-High = ', make_prediction(selected_stocks, "Low", True, d))
+st.write('Model LSTM -   Low-High = ', make_prediction(selected_stocks, "Low", True, d))
 
 forecast_days_new = m.predict(m.make_future_dataframe(periods=2000))
 forecast_days_new['ds'] = pd.to_datetime(forecast_days_new['ds']).apply(lambda x: x.date())
-st.write('Model2 -   Low-High = ', ((forecast_days_new.loc[forecast_days_new['ds'] == d])['yhat_lower'].item()), " - ",
+st.write('Model Fbprophet -   Low-High = ', ((forecast_days_new.loc[forecast_days_new['ds'] == d])['yhat_lower'].item()), " - ",
          ((forecast_days_new.loc[forecast_days_new['ds'] == d])['yhat_upper'].item()))
 
 
@@ -231,12 +231,16 @@ def strategy_test(company_ticker, strategy):
             if i > 1:
                 if (((res_close[0]['Close'][i - 1] - all_data['Low'][i - 1]) / all_data['Low'][i - 1]) * 100) < 0.75:
                     delta += ((res_close[0]['Close'][i] - res_open[0]['Open'][i]) / res_open[0]['Open'][i]) * 100
+                    delta_list.append(delta)
+                    trade_dates.append(res_close[0].index[i])
 
         if strategy == 3:
             if i >= 1:
                 if (((res_open[0]['Open'][i - 1] - res_close[0]['Close'][i - 1]) /
                      res_open[0]['Open'][i - 1]) * 100) > -1:
                     delta += ((res_close[0]['Close'][i] - res_open[0]['Open'][i]) / res_open[0]['Open'][i]) * 100
+                    delta_list.append(delta)
+                    trade_dates.append(res_close[0].index[i])
 
         if strategy == 4:
             if i >= 1:
