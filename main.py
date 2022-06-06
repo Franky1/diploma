@@ -104,7 +104,7 @@ def make_prediction(ticker, parametr, for_one_day, date_for_one_day=TODAY):
             # st.write(datetime.datetime.strptime(TODAY, "%Y-%m-%d").date())
             # st.write(date_for_one_day)
             # st.write(datetime.datetime.strptime(TODAY, "%Y-%m-%d").date() < date_for_one_day)
-            return "Модель1 не вміє робити прогнози більше ніж на 1 день у майбутнє\nЯкщо ви обрали завтрашню дату і " \
+            return "Модель на основі LSTM не вміє робити прогнози більше ніж на 1 день у майбутнє\nЯкщо ви обрали завтрашню дату і " \
                    "отримали це повідомлення , то проблема в тому, що ринки ще відкриті і не має данних за сьогодні! " \
                    "Також через це ви не побачили реальних данних на цю дату "
         else:
@@ -136,9 +136,9 @@ def make_prediction(ticker, parametr, for_one_day, date_for_one_day=TODAY):
 
 
 bebra = (make_prediction(selected_stocks, 'Close', False))
-st.subheader('Використаємо Модель1 для прогнозування ціни')
-st.write("Модель1 має хороші результати на прогнозуванні коротких проміжків часу")
-st.write('Модель1 дивиться на минулі 60 днів для того щоб зробити прогноз на 61 день. ')
+st.subheader('Використаємо Модель на основі LSTM для прогнозування ціни')
+st.write("Модель на основі LSTM має хороші результати на прогнозуванні коротких проміжків часу")
+st.write('Модель на основі LSTM дивиться на минулі 60 днів для того щоб зробити прогноз на 61 день. ')
 st.write("Вивидемо результат в таблиці та на графіку")
 st.write(bebra[0])
 fig_tmp = go.Figure()
@@ -161,8 +161,8 @@ m.fit(df_train)
 
 # прогноз на роки
 
-st.subheader('Зробити прогноз від 1 до 5 років використовуючи Модель2')
-st.write("Модель2 має хороші результати на прогнозуванні довших проміжків часу")
+st.subheader('Зробити прогноз від 1 до 5 років використовуючи Модель на основі FbProphet')
+st.write("Модель на основі FbProphet має хороші результати на прогнозуванні довших проміжків часу")
 st.write("Вивидемо результат в таблиці та на графіку")
 n_years = st.slider("Кількість років для прогнозу:", 1, 5)
 period = n_years * 365
@@ -177,7 +177,7 @@ fig1.update_layout(width=my_width, height=my_height)
 st.plotly_chart(fig1, width=my_width, height=my_height)
 
 # прогноз на дні
-st.subheader('Зробити прогноз від 1 до 100 днів використовуючи Модель2')
+st.subheader('Зробити прогноз від 1 до 100 днів використовуючи Модель на основі FbProphet')
 n_days = st.slider("Кількість днів для прогнозу:", 1, 100, value=20)
 period = n_days
 
@@ -321,4 +321,3 @@ selected_strategy = st.selectbox("Оберіть стратегію : ", strateg
 data_load_state2 = st.text("Обробляємо дані для цієї стратегії ... ")
 st.write('Результат стратегії : ', format(strategy_test(selected_stocks, selected_strategy), '.2f'), '%')
 data_load_state2.text("Дані Оброблено! ")
-
