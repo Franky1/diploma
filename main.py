@@ -223,42 +223,22 @@ def strategy_test(company_ticker, strategy):
     for i in range(len(res_open[0])):
 
         if strategy == 1:
-            # купили опен продали клоуз , хорошо работает на стаках которые постоянно растут на дистанции
             delta = ((res_close[0]['Close'][i] - res_open[0]['Open'][i]) / res_open[0]['Open'][i]) * 100
             delta_list.append(delta)
             trade_dates.append(res_close[0].index[i])
 
         if strategy == 2:
-            # купили опен продали клоуз ,
-            # пропусили день если от клоуза до лоя меньше процента ( закрытие в лой )
             if i > 1:
                 if (((res_close[0]['Close'][i - 1] - all_data['Low'][i - 1]) / all_data['Low'][i - 1]) * 100) < 0.75:
                     delta += ((res_close[0]['Close'][i] - res_open[0]['Open'][i]) / res_open[0]['Open'][i]) * 100
 
         if strategy == 3:
-            # минус процент - берем некст день
             if i >= 1:
                 if (((res_open[0]['Open'][i - 1] - res_close[0]['Close'][i - 1]) /
                      res_open[0]['Open'][i - 1]) * 100) > -1:
                     delta += ((res_close[0]['Close'][i] - res_open[0]['Open'][i]) / res_open[0]['Open'][i]) * 100
 
         if strategy == 4:
-            # move -5 % за день или два купи и продай 20 дней потом
-            if i >= 2:
-                if (((all_data['Close'][i - 1] - all_data['Open'][i - 1]) / all_data['Open'][i - 1]) * 100 > 5) or (
-                        ((all_data['Close'][i - 1] - all_data['Open'][i - 2]) / all_data['Open'][i - 2]) * 100 > 5):
-                    if i + 20 > len(res_open[0]):
-                        delta += ((res_close[0]['Close'][-1] - res_open[0]['Open'][i]) /
-                                  res_open[0]['Open'][i]) * 100
-                        trade_dates.append(res_close[0].index[-1])
-                    else:
-                        delta += ((res_close[0]['Close'][i + 19] - res_open[0]['Open'][i]) /
-                                  res_open[0]['Open'][i]) * 100
-                        trade_dates.append(res_close[0].index[i + 19])
-                    delta_list.append(delta)
-
-        if strategy == 5:
-            # gap down > 3 % buy and sell 20 days later
             if i >= 1:
                 if (((all_data['Close'][i - 1] - all_data['Open'][i]) / all_data['Close'][i - 1]) * 100) > 3:
                     if i + 20 > len(res_open[0]):
@@ -271,17 +251,15 @@ def strategy_test(company_ticker, strategy):
                         trade_dates.append(res_close[0].index[i + 19])
                     delta_list.append(delta)
 
-    # st.write(delta_list)
-    # st.write(trade_dates)
+
+
     fig_pnl = go.Figure()
     fig_pnl.add_trace(
         go.Scatter(x=trade_dates, y=delta_list, name='Графік прибутку стратегії ',
                    line=dict(color='green')))
     fig_pnl.add_trace(go.Scatter(x=data["Date"], y=data["Close"], name='Реальні дані',
                                  line=dict(color='blue')))
-    # fig_pnl.add_trace(
-    #     go.Scatter(x=bebra[1]['Close'].index, y=bebra[1]['Close'], name='Реальна ціна на данних для тренування',
-    #                line=dict(color='blue')))
+
     fig_pnl.layout.update(xaxis_rangeslider_visible=True)
     fig_pnl.update_layout(width=my_width, height=my_height)
     st.plotly_chart(fig_pnl, width=my_width, height=my_height)
@@ -289,33 +267,34 @@ def strategy_test(company_ticker, strategy):
 
 
 st.subheader('Інформація по всім стратегіям :')
-st.write('Нижче наведено теплову мапу по всім стратегіям та опис кожної стратегії:')
+st.write('Нижче наведено матрицю дохідності по всім стратегіям та опис кожної стратегії:')
 
 image = Image.open('Figure_1.png')
 
-st.image(image, width=1200, caption='Теплова мапа в період з Березня 2020 по Травень 2022')
+st.image(image, width=1200, caption='Матриця дохідності в період з Березня 2020 по Травень 2022')
 
-st.write('сделать тут выпадающее меню для каждой стратегии ')
+
 genre = st.radio(
     "Отримати опис стратегії",
-    ('1', '2', '3', '4', '5'))
+    ('1', '2', '3', '4'))
 
-st.write("тут буде опис стратегії")
+st.write(" ")
 if genre == '1':
-    st.write('1')
+    st.write('Стратегія полягає в тому, що якщо LSTM модель передбачає збільшення ціни акцій , то ми покупаємо і '
+             'продаємо по прогнозу якщо до нього дійшло або по ціні закриття акції під кінець торгової '
+             'сесії.Стратегія гарно працює на компаніях з великою капіталізацією.')
 elif genre == '2':
-    st.write("2")
+    st.write("Це доповнення першої стратегії. Полягає в тому, що ми пропускаємо наш сигнал на покупку, якщо прогнозований зріст менше 1 %. Також гарно працює на компаніях з великою капіталізацією.")
 elif genre == '3':
-    st.write("3.")
+    st.write("Третя стратегія також виступає доповненням першої і одночасно другої. Полягає в тому, що якщо акції компанії впали на 1% за день і LSTM модель прогнозує збільшення більше ніж на 1%, то ми покупаємо і продаємо по прогнозу або по ціні закриття. ")
 elif genre == '4':
-    st.write("4.")
-elif genre == '5':
-    st.write("5")
+    st.write("Четверта стратегія використовує модель FbProphet і націлена на компанії які мають тенденцію до росту. Суть стратегії полягає в тому щоб «відкупити» велике падіння якщо ми маємо прогноз на збільшення цін через місяць. Таким чином кожне падіння 5% та більше ми покупаєм і продаєм по прогнозу або ж через місяць, якщо до ціни прогнозу не доходить . ")
+
 
 
 st.subheader("Обрати стратегію інвестування :")
-st.write('про кожну стратегію ви можете прочитати нижче')
-strategys = (1, 2, 3, 4, 5,)
+st.write('про кожну стратегію ви можете прочитати вишче')
+strategys = (1, 2, 3, 4)
 selected_strategy = st.selectbox("Оберіть стратегію : ", strategys)
 
 data_load_state2 = st.text("Обробляємо дані для цієї стратегії ... ")
